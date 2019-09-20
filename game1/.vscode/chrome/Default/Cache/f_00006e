@@ -1,0 +1,1035 @@
+(function() {"use strict";var __module = CC_EDITOR ? module : {exports:{}};var __filename = 'preview-scripts/assets/src/Main.js';var __require = CC_EDITOR ? function (request) {return cc.require(request, require);} : function (request) {return cc.require(request, __filename);};function __define (exports, require, module) {"use strict";
+cc._RF.push(module, '5796aHP/SFHkJxORONA3coF', 'Main', __filename);
+// src/Main.ts
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var G_1 = require("./G");
+var Tile_1 = require("./Tile");
+var RankList_1 = require("./RankList");
+var U_1 = require("./utils/U");
+var _a = cc._decorator, ccclass = _a.ccclass, property = _a.property;
+var Main = /** @class */ (function (_super) {
+    __extends(Main, _super);
+    function Main() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.drops = 0;
+        /**
+         * 非wx模式下显示
+         */
+        _this.node_startbtn = null;
+        _this.node_tiles = null;
+        _this.prefab_tile = null;
+        _this.node_ranklist = null;
+        _this.prefab_ranklist = null;
+        _this.testdata = {
+            "10014": {
+                "1": {
+                    "pool_level3": 0,
+                    "pool_level2": 1,
+                    "pool_level1": 19
+                },
+                "2": {
+                    "pool_level1": 2
+                },
+                "3": {
+                    "pool_level1": 2
+                },
+                "4": {
+                    "pool_level1": 2
+                },
+                "5": {
+                    "pool_level1": 1
+                },
+                "6": {
+                    "pool_level1": 3
+                }
+            },
+            "10018": {
+                "1": {
+                    "pool_level1": 14
+                },
+                "2": {
+                    "pool_level1": 1
+                }
+            },
+            "10020": {
+                "1": {
+                    "pool_level1": 2
+                },
+                "3": {
+                    "pool_level1": 1
+                },
+                "4": {
+                    "pool_level1": 2
+                },
+                "5": {
+                    "pool_level1": 1
+                }
+            },
+            "10024": {
+                "1": {
+                    "pool_level1": 14
+                }
+            },
+            "10027": {
+                "1": {
+                    "pool_level1": 5
+                },
+                "3": {
+                    "pool_level1": 1
+                },
+                "4": {
+                    "pool_level1": 1
+                }
+            },
+            "10030": {
+                "1": {
+                    "pool_level1": 4
+                }
+            },
+            "10031": {
+                "1": {
+                    "pool_level3": 0,
+                    "pool_level2": 1,
+                    "pool_level1": 19
+                },
+                "2": {
+                    "pool_level1": 7
+                },
+                "3": {
+                    "pool_level1": 1
+                },
+                "4": {
+                    "pool_level1": 1
+                },
+                "5": {
+                    "pool_level1": 1
+                },
+                "6": {
+                    "pool_level1": 1
+                }
+            },
+            "10035": {
+                "1": {
+                    "pool_level1": 13
+                }
+            },
+            "10036": {
+                "2": {
+                    "pool_level1": 4
+                },
+                "3": {
+                    "pool_level1": 2
+                },
+                "4": {
+                    "pool_level1": 2
+                },
+                "5": {
+                    "pool_level1": 2
+                },
+                "6": {
+                    "pool_level1": 2
+                }
+            },
+            "10037": {
+                "1": {
+                    "pool_level3": 0,
+                    "pool_level2": 1,
+                    "pool_level1": 1
+                }
+            },
+            "10038": {
+                "1": {
+                    "pool_level1": 2
+                }
+            },
+            "10046": {
+                "1": {
+                    "pool_level1": 1
+                }
+            },
+            "10048": {
+                "1": {
+                    "pool_level1": 12
+                },
+                "2": {
+                    "pool_level1": 1
+                }
+            },
+            "10050": {
+                "1": {
+                    "pool_level1": 1
+                }
+            },
+            "10052": {
+                "1": {
+                    "pool_level1": 5
+                },
+                "2": {
+                    "pool_level1": 1
+                },
+                "3": {
+                    "pool_level1": 1
+                },
+                "4": {
+                    "pool_level1": 2
+                }
+            },
+            "10058": {
+                "1": {
+                    "pool_level1": 4
+                },
+                "2": {
+                    "pool_level1": 1
+                },
+                "3": {
+                    "pool_level1": 1
+                },
+                "4": {
+                    "pool_level1": 1
+                },
+                "5": {
+                    "pool_level1": 1
+                },
+                "6": {
+                    "pool_level1": 1
+                }
+            },
+            "10059": {
+                "1": {
+                    "pool_level3": 0,
+                    "pool_level2": 1,
+                    "pool_level1": 0
+                },
+                "3": {
+                    "pool_level1": 1
+                },
+                "4": {
+                    "pool_level1": 1
+                },
+                "5": {
+                    "pool_level1": 1
+                },
+                "6": {
+                    "pool_level1": 1
+                }
+            },
+            "10066": {
+                "1": {
+                    "pool_level3": 0,
+                    "pool_level2": 3,
+                    "pool_level1": 0
+                },
+                "2": {
+                    "pool_level1": 1
+                },
+                "4": {
+                    "pool_level1": 1
+                },
+                "5": {
+                    "pool_level1": 1
+                }
+            },
+            "10073": {
+                "1": {
+                    "pool_level1": 1
+                },
+                "2": {
+                    "pool_level1": 1
+                },
+                "3": {
+                    "pool_level1": 1
+                },
+                "4": {
+                    "pool_level1": 1
+                },
+                "5": {
+                    "pool_level1": 1
+                },
+                "6": {
+                    "pool_level1": 1
+                }
+            },
+            "10075": {
+                "1": {
+                    "pool_level1": 10
+                }
+            },
+            "10078": {
+                "1": {
+                    "pool_level1": 26,
+                    "pool_level3": 1,
+                    "pool_level2": 1
+                },
+                "2": {
+                    "pool_level1": 1
+                },
+                "3": {
+                    "pool_level1": 1
+                },
+                "4": {
+                    "pool_level1": 1
+                },
+                "5": {
+                    "pool_level1": 1
+                },
+                "6": {
+                    "pool_level1": 1
+                }
+            },
+            "10085": {
+                "1": {
+                    "pool_level1": 1
+                },
+                "2": {
+                    "pool_level1": 1
+                },
+                "4": {
+                    "pool_level1": 1
+                }
+            },
+            "10094": {
+                "1": {
+                    "pool_level1": 5
+                },
+                "2": {
+                    "pool_level1": 2
+                },
+                "3": {
+                    "pool_level1": 1
+                },
+                "4": {
+                    "pool_level1": 1
+                },
+                "5": {
+                    "pool_level1": 1
+                },
+                "6": {
+                    "pool_level1": 3
+                }
+            },
+            "10117": {
+                "1": {
+                    "pool_level3": 0,
+                    "pool_level2": 1,
+                    "pool_level1": 4
+                },
+                "2": {
+                    "pool_level1": 1
+                },
+                "3": {
+                    "pool_level1": 1
+                },
+                "4": {
+                    "pool_level1": 1
+                },
+                "5": {
+                    "pool_level1": 1
+                },
+                "6": {
+                    "pool_level1": 1
+                }
+            },
+            "10127": {
+                "1": {
+                    "pool_level1": 1
+                }
+            },
+            "10128": {
+                "1": {
+                    "pool_level3": 0,
+                    "pool_level2": 1,
+                    "pool_level1": 25
+                },
+                "2": {
+                    "pool_level1": 1
+                },
+                "3": {
+                    "pool_level1": 1
+                },
+                "4": {
+                    "pool_level1": 1
+                },
+                "5": {
+                    "pool_level1": 1
+                },
+                "6": {
+                    "pool_level1": 1
+                }
+            },
+            "10129": {
+                "1": {
+                    "pool_level3": 0,
+                    "pool_level2": 1,
+                    "pool_level1": 0
+                }
+            },
+            "10145": {
+                "1": {
+                    "pool_level1": 2
+                },
+                "2": {
+                    "pool_level1": 1
+                },
+                "4": {
+                    "pool_level1": 1
+                }
+            },
+            "10156": {
+                "1": {
+                    "pool_level1": 1
+                },
+                "2": {
+                    "pool_level1": 1
+                },
+                "3": {
+                    "pool_level1": 1
+                },
+                "4": {
+                    "pool_level1": 1
+                },
+                "5": {
+                    "pool_level1": 1
+                },
+                "6": {
+                    "pool_level1": 1
+                }
+            },
+            "10183": {
+                "2": {
+                    "pool_level1": 2
+                }
+            },
+            "10184": {
+                "1": {
+                    "pool_level3": 0,
+                    "pool_level2": 2,
+                    "pool_level1": 22
+                }
+            },
+            "10206": {
+                "1": {
+                    "pool_level1": 1
+                }
+            },
+            "10208": {
+                "1": {
+                    "pool_level3": 0,
+                    "pool_level2": 1,
+                    "pool_level1": 6
+                },
+                "2": {
+                    "pool_level1": 1
+                },
+                "3": {
+                    "pool_level3": 0,
+                    "pool_level2": 1,
+                    "pool_level1": 1
+                },
+                "4": {
+                    "pool_level3": 0,
+                    "pool_level2": 1,
+                    "pool_level1": 1
+                },
+                "5": {
+                    "pool_level1": 1
+                },
+                "6": {
+                    "pool_level1": 2
+                }
+            },
+            "10211": {
+                "1": {
+                    "pool_level1": 17
+                },
+                "2": {
+                    "pool_level1": 2
+                },
+                "3": {
+                    "pool_level1": 2
+                },
+                "4": {
+                    "pool_level1": 4
+                },
+                "5": {
+                    "pool_level1": 2
+                },
+                "6": {
+                    "pool_level1": 2
+                }
+            },
+            "10215": {
+                "1": {
+                    "pool_level1": 1
+                }
+            },
+            "10237": {
+                "1": {
+                    "pool_level1": 11
+                }
+            },
+            "10247": {
+                "1": {
+                    "pool_level3": 1,
+                    "pool_level2": 18,
+                    "pool_level1": 0
+                },
+                "2": {
+                    "pool_level3": 1,
+                    "pool_level2": 3,
+                    "pool_level1": 3
+                },
+                "3": {
+                    "pool_level3": 1,
+                    "pool_level2": 1,
+                    "pool_level1": 0
+                },
+                "4": {
+                    "pool_level3": 1,
+                    "pool_level2": 2,
+                    "pool_level1": 0
+                },
+                "5": {
+                    "pool_level3": 1,
+                    "pool_level2": 1,
+                    "pool_level1": 3
+                },
+                "6": {
+                    "pool_level3": 1,
+                    "pool_level2": 1,
+                    "pool_level1": 0
+                }
+            },
+            "10252": {
+                "1": {
+                    "pool_level1": 4
+                },
+                "2": {
+                    "pool_level1": 1
+                },
+                "3": {
+                    "pool_level1": 1
+                }
+            },
+            "10263": {
+                "1": {
+                    "pool_level1": 5
+                },
+                "2": {
+                    "pool_level1": 1
+                }
+            },
+            "10271": {
+                "1": {
+                    "pool_level3": 0,
+                    "pool_level2": 1,
+                    "pool_level1": 14
+                },
+                "2": {
+                    "pool_level1": 1
+                },
+                "3": {
+                    "pool_level1": 3
+                },
+                "4": {
+                    "pool_level1": 2
+                },
+                "5": {
+                    "pool_level1": 2
+                },
+                "6": {
+                    "pool_level1": 2
+                }
+            },
+            "10288": {
+                "1": {
+                    "pool_level1": 12
+                },
+                "2": {
+                    "pool_level1": 3
+                },
+                "4": {
+                    "pool_level1": 1
+                }
+            },
+            "10290": {
+                "1": {
+                    "pool_level1": 7
+                }
+            },
+            "10295": {
+                "3": {
+                    "pool_level1": 2
+                },
+                "6": {
+                    "pool_level1": 2
+                }
+            },
+            "10301": {
+                "1": {
+                    "pool_level1": 7
+                },
+                "2": {
+                    "pool_level1": 2
+                },
+                "3": {
+                    "pool_level1": 1
+                },
+                "4": {
+                    "pool_level1": 1
+                },
+                "5": {
+                    "pool_level1": 1
+                },
+                "6": {
+                    "pool_level1": 1
+                }
+            },
+            "10338": {
+                "1": {
+                    "pool_level1": 11,
+                    "pool_level3": 0,
+                    "pool_level2": 1
+                },
+                "2": {
+                    "pool_level1": 1
+                },
+                "3": {
+                    "pool_level1": 1
+                },
+                "4": {
+                    "pool_level1": 1
+                },
+                "5": {
+                    "pool_level1": 1
+                },
+                "6": {
+                    "pool_level1": 1
+                }
+            },
+            "10415": {
+                "1": {
+                    "pool_level3": 2,
+                    "pool_level2": 37,
+                    "pool_level1": 0
+                }
+            },
+            "10425": {
+                "1": {
+                    "pool_level1": 1
+                }
+            },
+            "10433": {
+                "1": {
+                    "pool_level1": 1
+                }
+            },
+            "10490": {
+                "1": {
+                    "pool_level1": 21
+                },
+                "2": {
+                    "pool_level1": 4
+                },
+                "3": {
+                    "pool_level1": 1
+                },
+                "4": {
+                    "pool_level1": 1
+                },
+                "5": {
+                    "pool_level1": 1
+                },
+                "6": {
+                    "pool_level1": 1
+                }
+            },
+            "10495": {
+                "1": {
+                    "pool_level3": 0,
+                    "pool_level2": 13,
+                    "pool_level1": 0
+                },
+                "2": {
+                    "pool_level3": 0,
+                    "pool_level2": 6,
+                    "pool_level1": 0
+                },
+                "3": {
+                    "pool_level3": 0,
+                    "pool_level2": 2,
+                    "pool_level1": 0
+                },
+                "4": {
+                    "pool_level3": 0,
+                    "pool_level2": 2,
+                    "pool_level1": 0
+                },
+                "5": {
+                    "pool_level3": 0,
+                    "pool_level2": 4,
+                    "pool_level1": 0
+                },
+                "6": {
+                    "pool_level3": 0,
+                    "pool_level2": 2,
+                    "pool_level1": 0
+                }
+            },
+            "10527": {
+                "1": {
+                    "pool_level1": 15
+                },
+                "2": {
+                    "pool_level1": 4
+                },
+                "3": {
+                    "pool_level1": 1
+                },
+                "4": {
+                    "pool_level1": 1
+                },
+                "5": {
+                    "pool_level1": 1
+                },
+                "6": {
+                    "pool_level1": 1
+                }
+            },
+            "10581": {
+                "1": {
+                    "pool_level1": 1
+                }
+            },
+            "10664": {
+                "1": {
+                    "pool_level1": 4
+                }
+            },
+            "10709": {
+                "1": {
+                    "pool_level3": 0,
+                    "pool_level2": 28,
+                    "pool_level1": -10
+                },
+                "2": {
+                    "pool_level3": 1,
+                    "pool_level2": 0,
+                    "pool_level1": 0
+                },
+                "3": {
+                    "pool_level3": 1,
+                    "pool_level2": 0,
+                    "pool_level1": 0
+                },
+                "4": {
+                    "pool_level3": 0,
+                    "pool_level2": 1,
+                    "pool_level1": 0
+                },
+                "5": {
+                    "pool_level3": 0,
+                    "pool_level2": 1,
+                    "pool_level1": 0
+                },
+                "6": {
+                    "pool_level3": 0,
+                    "pool_level2": 1,
+                    "pool_level1": 0
+                }
+            },
+            "10734": {
+                "1": {
+                    "pool_level1": 22
+                }
+            },
+            "10758": {
+                "1": {
+                    "pool_level1": 2
+                }
+            },
+            "10785": {
+                "1": {
+                    "pool_level3": 0,
+                    "pool_level2": 1,
+                    "pool_level1": 0
+                }
+            }
+        };
+        return _this;
+    }
+    Main.prototype.onLoad = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        this.redrop();
+                        G_1.G.eventBus.on("hiderank", function () {
+                            if (G_1.G.wxgame.infobutton)
+                                G_1.G.wxgame.infobutton.show();
+                            if (G_1.G.wxgame.bannerad)
+                                G_1.G.wxgame.bannerad.show();
+                        });
+                        return [4 /*yield*/, this.initWXGame()];
+                    case 1:
+                        _a.sent();
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
+    Main.prototype.start = function () {
+        cc.director.preloadScene("game");
+        // for(let i in this.testdata){
+        //     console.log(i + ":" + this.testdata[i])
+        // }
+    };
+    Main.prototype.redrop = function () {
+        this.drops = 0;
+        this.node_tiles.removeAllChildren();
+        this.schedule(this.dropDownTile, G_1.G.TIME.SECOND_SMALL, 500);
+    };
+    /**
+     * 随机掉落块效果
+     */
+    Main.prototype.dropDownTile = function () {
+        var node_tile = cc.instantiate(this.prefab_tile);
+        node_tile.getComponent(Tile_1.default).setNum(U_1.U.randInt(0, Tile_1.default.MAX_NUM), false, false);
+        node_tile.scale = 2;
+        node_tile.x = U_1.U.randInt(-this.node.width / 2, this.node.width / 2);
+        node_tile.y = this.node.height / 2;
+        node_tile.zIndex = -this.drops;
+        node_tile.rotation = U_1.U.randInt(0, 360);
+        this.node_tiles.addChild(node_tile);
+        var droptime = G_1.G.TIME.SECOND_SMALL * U_1.U.randInt(3, Tile_1.default.MAX_NUM);
+        if (node_tile.x < -this.node.width / 4 || node_tile.x > this.node.width / 4) {
+            node_tile.runAction(cc.moveTo(droptime, cc.p(node_tile.x, (-this.node.height / 2 + 20 + Math.floor(this.drops / 2)))));
+        }
+        else if (node_tile.x < -this.node.width / 6 || node_tile.x > this.node.width / 6) {
+            node_tile.runAction(cc.moveTo(droptime, cc.p(node_tile.x, (-this.node.height / 2 + 20 + Math.floor(this.drops / 1.5)))));
+        }
+        else if (node_tile.x < -this.node.width / 8 || node_tile.x > this.node.width / 8) {
+            node_tile.runAction(cc.moveTo(droptime, cc.p(node_tile.x, (-this.node.height / 2 + 20 + Math.floor(this.drops / 1.25)))));
+        }
+        else {
+            node_tile.runAction(cc.moveTo(droptime, cc.p(node_tile.x, (-this.node.height / 2 + 20 + Math.floor(this.drops)))));
+        }
+        ++this.drops;
+    };
+    /**
+     * 点了emoji
+     */
+    Main.prototype.onBtnEmoji = function (event, eventdata) {
+        this.node.getChildByName("cat" + eventdata).runAction(cc.sequence(cc.moveBy(G_1.G.TIME.SECOND_SMALL, cc.p(0, 20)), cc.moveBy(G_1.G.TIME.SECOND_SMALL, cc.p(0, -20)), cc.moveBy(G_1.G.TIME.SECOND_SMALL, cc.p(0, 20)), cc.moveBy(G_1.G.TIME.SECOND_SMALL, cc.p(0, -20))));
+    };
+    /**
+     * 初始化微信小游戏部分
+     */
+    Main.prototype.initWXGame = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            var ratex, ratey, title_1, imgurl_1, error_1;
+            var _this = this;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        _a.trys.push([0, 3, , 4]);
+                        if (!wx) {
+                            U_1.U.log("未发现微信接口");
+                            this.node_startbtn.active = true;
+                            return [2 /*return*/];
+                        }
+                        this.node_startbtn.active = false;
+                        ratex = this.node.width / window.innerWidth;
+                        ratey = this.node.height / window.innerHeight;
+                        G_1.G.wxgame.infobutton = wx.createUserInfoButton({
+                            type: "text",
+                            text: "开始游戏",
+                            style: {
+                                left: (this.node.width - 300) / ratex / 2,
+                                top: (this.node.height - 100) / ratey / 2,
+                                width: 300 / ratex,
+                                height: 100 / ratey,
+                                lineHeight: 50,
+                                backgroundColor: "#F2E54E",
+                                borderColor: "#999131",
+                                borderWidth: 4,
+                                color: "#000000",
+                                textAlign: "center",
+                                fontSize: 22,
+                                borderRadius: 4
+                            }
+                        });
+                        G_1.G.wxgame.infobutton.onTap(function (res) {
+                            U_1.U.log(G_1.G.wxgame.infobutton);
+                            U_1.U.log(res);
+                            G_1.G.player.name = res.userInfo.nickName;
+                            G_1.G.player.avatarkey = res.userInfo.avatarUrl;
+                            G_1.G.wxgame.infobutton.hide();
+                            U_1.U.log(G_1.G.player);
+                            _this.onBtnStart();
+                        });
+                        G_1.G.wxgame.bannerad = wx.createBannerAd({
+                            adUnitId: "adunit-1093826677110416",
+                            style: {
+                                left: 0,
+                                top: (this.node.height - 185) / ratey,
+                                height: 80 / ratey,
+                                width: this.node.width / ratex,
+                            }
+                        });
+                        G_1.G.wxgame.bannerad.show();
+                        return [4 /*yield*/, wx.showShareMenu({
+                                withShareTicket: false,
+                                title: '叫上小伙伴们！',
+                                success: function (res) {
+                                    U_1.U.log('分享菜单成功');
+                                    U_1.U.log(res);
+                                },
+                                fail: function (res) {
+                                    U_1.U.log('分享菜单失败');
+                                    U_1.U.log(res);
+                                }
+                            })];
+                    case 1:
+                        _a.sent();
+                        title_1 = G_1.G.ShareTitleArr[U_1.U.randInt(0, G_1.G.ShareTitleArr.length - 1)];
+                        imgurl_1 = G_1.G.ShareImgArr[U_1.U.randInt(0, G_1.G.ShareImgArr.length - 1)];
+                        return [4 /*yield*/, wx.onShareAppMessage(function (obj) {
+                                return {
+                                    title: title_1,
+                                    imageUrl: imgurl_1,
+                                    success: function () {
+                                        U_1.U.log("转发成功");
+                                    },
+                                    fail: function () {
+                                        U_1.U.log("转发失败");
+                                    }
+                                };
+                            })];
+                    case 2:
+                        _a.sent();
+                        return [3 /*break*/, 4];
+                    case 3:
+                        error_1 = _a.sent();
+                        U_1.U.log(error_1);
+                        return [3 /*break*/, 4];
+                    case 4: return [2 /*return*/];
+                }
+            });
+        });
+    };
+    Main.prototype.onBtnStart = function () {
+        cc.director.loadScene("game");
+    };
+    Main.prototype.onBtnShare = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            var title, imgurl;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        title = G_1.G.ShareTitleArr[U_1.U.randInt(0, G_1.G.ShareTitleArr.length - 1)];
+                        imgurl = G_1.G.ShareImgArr[U_1.U.randInt(0, G_1.G.ShareImgArr.length - 1)];
+                        //主动发起转发
+                        return [4 /*yield*/, wx.shareAppMessage({
+                                title: title,
+                                imageUrl: imgurl,
+                                success: function () {
+                                    U_1.U.log("转发成功，main");
+                                },
+                                fail: function () {
+                                    U_1.U.log("转发失败，main");
+                                }
+                            })];
+                    case 1:
+                        //主动发起转发
+                        _a.sent();
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
+    /**
+     * 更多有趣的游戏二维码
+     */
+    Main.prototype.onBtnOtherGame = function () {
+        if (!wx) {
+            U_1.U.log("未发现微信接口");
+            this.node_startbtn.active = true;
+            return;
+        }
+        var temparr = U_1.U.randArray(G_1.G.OtherGame);
+        for (var i = 0; i < temparr.length; ++i) {
+            if (temparr[i].SELF) { //排除跳转回自己
+                temparr.splice(i, 1);
+                break;
+            }
+        }
+        U_1.U.log("APPID: " + temparr[0].APPID);
+        wx.navigateToMiniProgram({
+            appId: temparr[0].APPID,
+            path: "",
+            extraData: {
+                from: temparr[0].SIGN
+            },
+            envVersion: "trial",
+            success: function (res) {
+                U_1.U.log("navigateToMiniProgram success");
+                U_1.U.log(res);
+            },
+            fail: function (res) {
+                U_1.U.log("navigateToMiniProgram fail");
+                U_1.U.log(res);
+            },
+            complete: function (res) {
+                U_1.U.log("navigateToMiniProgram complete");
+                U_1.U.log(res);
+            },
+        });
+    };
+    /**
+     * 显示排行榜
+     */
+    Main.prototype.onBtnShowRank = function () {
+        if (G_1.G.wxgame.infobutton)
+            G_1.G.wxgame.infobutton.hide();
+        if (G_1.G.wxgame.bannerad)
+            G_1.G.wxgame.bannerad.hide();
+        if (!this.node_ranklist) {
+            this.node_ranklist = cc.instantiate(this.prefab_ranklist);
+            // this.node_ranklist.getComponent(RankList).game = this
+            this.node.addChild(this.node_ranklist);
+        }
+        this.node_ranklist.getComponent(RankList_1.default).show();
+    };
+    __decorate([
+        property(cc.Node)
+    ], Main.prototype, "node_startbtn", void 0);
+    __decorate([
+        property(cc.Node)
+    ], Main.prototype, "node_tiles", void 0);
+    __decorate([
+        property(cc.Prefab)
+    ], Main.prototype, "prefab_tile", void 0);
+    __decorate([
+        property(cc.Prefab)
+    ], Main.prototype, "prefab_ranklist", void 0);
+    Main = __decorate([
+        ccclass
+    ], Main);
+    return Main;
+}(cc.Component));
+exports.default = Main;
+
+cc._RF.pop();
+        }
+        if (CC_EDITOR) {
+            __define(__module.exports, __require, __module);
+        }
+        else {
+            cc.registerModuleFunc(__filename, function () {
+                __define(__module.exports, __require, __module);
+            });
+        }
+        })();
+        //# sourceMappingURL=Main.js.map
+        

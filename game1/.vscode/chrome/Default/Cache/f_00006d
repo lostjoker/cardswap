@@ -1,0 +1,778 @@
+(function() {"use strict";var __module = CC_EDITOR ? module : {exports:{}};var __filename = 'preview-scripts/assets/src/Game.js';var __require = CC_EDITOR ? function (request) {return cc.require(request, require);} : function (request) {return cc.require(request, __filename);};function __define (exports, require, module) {"use strict";
+cc._RF.push(module, 'a33beha1mdCRamBzxWg4nEc', 'Game', __filename);
+// src/Game.ts
+
+Object.defineProperty(exports, "__esModule", { value: true });
+/**
+ * 游戏实现
+ */
+var _a = cc._decorator, ccclass = _a.ccclass, property = _a.property;
+var G_1 = require("./G");
+var Colors_1 = require("./Colors");
+var OverPanel_1 = require("./widget/OverPanel");
+var Tile_1 = require("./Tile");
+var U_1 = require("./utils/U");
+var Card_1 = require("./Card");
+// declare var wx:any
+var Game = /** @class */ (function (_super) {
+    __extends(Game, _super);
+    function Game() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        /**
+         * 游戏数据
+         */
+        _this.DATA = {
+            mecard: null,
+            enemycard: null,
+        };
+        _this.score = 0;
+        _this.tilePre = null;
+        /**
+         * 在原始prefab上缩放的倍率，计算得出，用于其他缩放比
+         */
+        _this.tileScale = {
+            w: 1,
+            h: 1
+        };
+        _this.savefile = "xdwjy.txt";
+        _this.node_bg = null;
+        _this.powerPre = null;
+        _this.node_face_me = null;
+        _this.lbl_score_me = null;
+        _this.win_score = 1;
+        _this.tiles = [];
+        //块数据组
+        _this.tilesdata = [];
+        _this.node_powers = [];
+        //能量
+        _this.power = 5;
+        _this.powermax = 5;
+        //能量较少标准，变色等用途
+        _this.powerless = 1;
+        /**
+         * 块层
+         */
+        _this.tileBg = null;
+        /**
+         * 触发效果层
+         */
+        _this.node_effects = null;
+        _this.line_weight = 5;
+        /**
+         * 血槽层
+         */
+        _this.powerBarBg = null;
+        _this.ac_star = [];
+        //最大生成的数字，注：目前小于5会死循环于无限三连无法生成
+        _this.maxNumGen = 5;
+        //当前出现着的最大值
+        _this.maxNumCurrent = 0;
+        //消除所需数量
+        _this.clearNeed = 3;
+        /**
+         * 正在下落中，不可点
+         */
+        _this.isMoving = false;
+        /**
+         * 连击次数，用于一些统计和判断
+         */
+        _this.combo = 0;
+        /**
+         * 可恢复能量槽的连击次数需求
+         */
+        _this.recoverPowerCombo = 2;
+        /**
+         * 消除块列表
+         */
+        _this.destoryList = [];
+        /**
+         * 猫表情
+         */
+        _this.node_emo = null;
+        /**
+         * 表情图集合
+         */
+        _this.emojis = {
+            "cat1": {
+                url: "texture/cat1",
+                cache: null,
+            },
+            "cat2": {
+                url: "texture/cat2",
+                cache: null,
+            },
+            "cat3": {
+                url: "texture/cat3",
+                cache: null,
+            },
+        };
+        //鼓励词
+        _this.encourage = [
+            "",
+            "NICE", "NICE!",
+            "COOL", "COOL!", "COOL!!",
+            "SUPER", "SUPER!", "SUPER!!", "SUPER!!",
+            "WONDERFUL", "WONDERFUL!", "WONDERFUL!!", "WONDERFUL!!", "WONDERFUL!!",
+            "EXCELLENT", "EXCELLENT!", "EXCELLENT!!", "EXCELLENT!!", "EXCELLENT!!", "EXCELLENT!!",
+            "FANTASTIC", "FANTASTIC!", "FANTASTIC!!", "FANTASTIC!!", "FANTASTIC!!", "FANTASTIC!!", "FANTASTIC!!",
+        ];
+        _this.prefab_overpanel = null;
+        _this.node_overPanel = null;
+        _this.finished = false;
+        /**
+         * 特殊效果特效
+         */
+        _this.prefab_effect1 = null;
+        _this.node_encourage = null;
+        _this.node_combo = null;
+        _this.node_ranklist = null;
+        _this.prefab_ranklist = null;
+        _this.node_btnshare = null;
+        /**
+         * 卡牌自身prefab
+         */
+        _this.prefab_card = null;
+        //左侧卡牌
+        _this.node_leftcard = null;
+        //右侧卡牌
+        _this.node_rightcard = null;
+        return _this;
+    }
+    Game.prototype.onLoad = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                //结算界面
+                if (!this.node_overPanel) {
+                    this.node_overPanel = cc.instantiate(this.prefab_overpanel);
+                    this.node_overPanel.getComponent(OverPanel_1.default).game = this;
+                    this.node.addChild(this.node_overPanel);
+                }
+                this.init();
+                if (G_1.G.player) {
+                    this.updateFace();
+                }
+                this.loadOver();
+                return [2 /*return*/];
+            });
+        });
+    };
+    Game.prototype.start = function () {
+    };
+    Game.prototype.init = function () {
+        this.finished = false;
+        this.DATA.mecard = new Card_1.default();
+        this.DATA.mecard.init(G_1.G.getData().me);
+        this.DATA.mecard.node = cc.instantiate(this.prefab_card);
+        this.node_leftcard.addChild(this.DATA.mecard.node);
+        this.DATA.mecard.initView();
+        this.DATA.enemycard = new Card_1.default();
+        this.DATA.enemycard.init(G_1.G.getData().enemy);
+        this.DATA.enemycard.node = cc.instantiate(this.prefab_card);
+        this.node_rightcard.addChild(this.DATA.enemycard.node);
+        this.DATA.enemycard.initView();
+        this.node_bg.color = Colors_1.default.bg[0];
+        this.score = 0; //Math.ceil(this.score * 0.4)//重玩分数-60%
+        this.lbl_score_me.string = this.score + "";
+        this.lbl_score_me.node.getComponent(cc.Widget).enabled = true;
+        this.updateMaxNumGen();
+        this.tileBg.removeAllChildren();
+        this.node_effects.removeAllChildren();
+        this.node_combo.active = false;
+        this.node_encourage.active = false;
+        // 初始化方块数组
+        this.tiles = [
+            [null, null, null, null, null, null, null],
+            [null, null, null, null, null, null, null],
+            [null, null, null, null, null, null, null],
+            [null, null, null, null, null, null, null],
+            [null, null, null, null, null, null, null],
+        ];
+        this.tilesdata = [
+            [0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0],
+        ];
+        // 重置能量条
+        this.resetPower(this.power);
+        this.genTiles(true);
+        //计算缩放倍率
+        var tile = cc.instantiate(this.tilePre);
+        var oldw = tile.width;
+        var oldh = tile.height;
+        this.tileScale.w = this.tiles[0][0].width / oldw;
+        this.tileScale.h = this.tiles[0][0].height / oldh;
+    };
+    Game.prototype.loadOver = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                this.gameStart();
+                return [2 /*return*/];
+            });
+        });
+    };
+    Game.prototype.gameStart = function () {
+        this.updateScore();
+        this.isMoving = false;
+    };
+    /**
+     * 更新最大的块生成数
+     */
+    Game.prototype.updateMaxNumGen = function () {
+        for (var i = 0; i < G_1.G.SCORE_RANK.length; ++i) {
+            if (this.score > G_1.G.SCORE_RANK[i].SCORE) {
+                this.maxNumGen = G_1.G.SCORE_RANK[i].MAX_NUM_GEN;
+                continue;
+            }
+            break;
+        }
+    };
+    Game.prototype.genTiles = function (first) {
+        if (first === void 0) { first = false; }
+        // 计算生成方块数字的概率
+        var chance = new Array();
+        for (var num = 0; num < this.maxNumGen; num++) {
+            //越小的值占的权重越高
+            chance[num] = this.maxNumGen - num;
+        }
+        var weightall = 0;
+        for (var num = 0; num < chance.length; num++) {
+            weightall += chance[num];
+        }
+        // 生成初始方块
+        for (var r = 0; r < this.tiles.length; r++) {
+            for (var c = 0; c < this.tiles[r].length; c++) {
+                if (!first && this.tiles[r][c])
+                    continue;
+                var tile = cc.instantiate(this.tilePre);
+                tile.getComponent(Tile_1.default).game = this;
+                tile.width = (this.tileBg.width - this.line_weight * (this.tiles[r].length + 1)) / this.tiles[r].length;
+                tile.height = (this.tileBg.height - this.line_weight * (this.tiles.length + 1)) / this.tiles.length;
+                if (first) {
+                    var randomNum = 0;
+                    while (true) {
+                        var arr = new Array();
+                        var scanArr = new Array();
+                        randomNum = Math.random() * weightall;
+                        var newNum = 0;
+                        var min = 0;
+                        for (var num = 0; num < chance.length; num++) {
+                            if (randomNum >= min && randomNum <= min + chance[num]) {
+                                newNum = num + 1;
+                                break;
+                            }
+                            else {
+                                min = min + chance[num];
+                            }
+                        }
+                        tile.getComponent(Tile_1.default).setNum(newNum, false, false);
+                        this.tiles[r][c] = tile;
+                        this.scanAround(r, c, -1, -1, newNum, arr, scanArr);
+                        if (arr.length < this.clearNeed) { //初始不生成3连的
+                            break;
+                        }
+                    }
+                }
+                else {
+                    var randomNum = Math.random() * weightall;
+                    var newNum = 0;
+                    var min = 0;
+                    for (var num = 0; num < chance.length; num++) {
+                        if (randomNum >= min && randomNum <= min + chance[num]) {
+                            newNum = num + 1;
+                            break;
+                        }
+                        else {
+                            min = min + chance[num];
+                        }
+                    }
+                    tile.getComponent(Tile_1.default).setNum(newNum, false, false);
+                    this.tiles[r][c] = tile;
+                }
+                tile.getComponent(Tile_1.default).drawMe(r, c);
+                this.tileBg.addChild(tile);
+            }
+        }
+    };
+    /**
+     * 复活
+     */
+    Game.prototype.relive = function () {
+        this.finished = false;
+        this.resetPower(this.powermax);
+        this.score = Math.ceil(this.score * 0.7); //求助-30%
+        this.lbl_score_me.string = this.score + "";
+        this.lbl_score_me.node.getComponent(cc.Widget).enabled = true;
+        this.updateMaxNumGen();
+        this.isMoving = false;
+    };
+    /**
+     * 重置能量条
+     */
+    Game.prototype.resetPower = function (count) {
+        if (count === void 0) { count = this.powermax; }
+        this.node_powers = [null, null, null, null, null];
+        this.powerBarBg.removeAllChildren();
+        for (var i = 0; i < count; i++) {
+            var power = cc.instantiate(this.powerPre);
+            power.width = (this.powerBarBg.width - this.line_weight * (this.node_powers.length + 1)) / this.node_powers.length;
+            power.height = this.powerBarBg.height - this.line_weight * 2;
+            this.powerBarBg.addChild(power);
+            power.setPosition(this.line_weight + (this.line_weight + power.width) * i + power.width / 2, this.line_weight + power.height / 2);
+            power.color = Colors_1.default.power;
+            this.node_powers[i] = power;
+        }
+        ;
+        this.power = count;
+    };
+    /**
+     * 更新头像
+     */
+    Game.prototype.updateFace = function () {
+        // cc.loader.load({ url: G.player.avatarkey, type: "png" }, (err, texture) => {
+        //     this.node_face_me.getChildByName("face").getComponent(cc.Sprite).spriteFrame = new cc.SpriteFrame(texture)
+        // })
+    };
+    /*
+     * 核心扫描逻辑
+     * @param row 指定行
+     * @param col 指定列
+     * @param lastRow 上次扫描的行，-1表示当前为出发点
+     * @param lastCol 上次扫描的列，-1表示当前为出发点
+     * @param num 扫描要比对的数字
+     * @param arr 记录数字相同且彼此相邻的数组
+     * @param scanArr 记录扫描过的点的数组
+     */
+    Game.prototype.scanAround = function (r, c, lastRow, lastCol, num, arr, scanArr) {
+        // U.log("row:",row,",col:",col,",lastRow:",lastRow,",lastCol:",lastCol,",num:",num,",arr:",arr,",scanArr:",scanArr);
+        if (this.tiles[r][c] == null) {
+            return;
+        }
+        var isClear = false;
+        if (scanArr == undefined) {
+            scanArr = new Array();
+        }
+        // 扫描过的节点不再扫描
+        if (scanArr.indexOf(r + "#" + c) == -1) {
+            scanArr.push(r + "#" + c);
+        }
+        else {
+            return;
+        }
+        // 扫描上
+        if ((r < this.tiles.length - 1) && (lastRow != (r + 1) || lastCol != c) && this.tiles[r + 1][c] != null) {
+            var nextNum = this.tiles[r + 1][c].getComponent(Tile_1.default).num;
+            if (nextNum == num) {
+                if (arr.indexOf(r + "#" + c) == -1) {
+                    arr.push(r + "#" + c);
+                }
+                this.scanAround(r + 1, c, r, c, num, arr, scanArr);
+                isClear = true;
+            }
+        }
+        // 扫描下
+        if (r > 0 && (lastRow != (r - 1) || lastCol != c) && this.tiles[r - 1][c] != null) {
+            var nextNum = this.tiles[r - 1][c].getComponent(Tile_1.default).num;
+            if (nextNum == num) {
+                if (arr.indexOf(r + "#" + c) == -1) {
+                    arr.push(r + "#" + c);
+                }
+                this.scanAround(r - 1, c, r, c, num, arr, scanArr);
+                isClear = true;
+            }
+        }
+        // 扫描左
+        if (c > 0 && (lastRow != r || lastCol != (c - 1)) && this.tiles[r][c - 1] != null) {
+            var nextNum = this.tiles[r][c - 1].getComponent(Tile_1.default).num;
+            if (nextNum == num) {
+                if (arr.indexOf(r + "#" + c) == -1) {
+                    arr.push(r + "#" + c);
+                }
+                this.scanAround(r, c - 1, r, c, num, arr, scanArr);
+                isClear = true;
+            }
+        }
+        // 扫描右
+        if ((c < this.tiles[0].length - 1) && (lastRow != r || lastCol != (c + 1)) && this.tiles[r][c + 1] != null) {
+            var nextNum = this.tiles[r][c + 1].getComponent(Tile_1.default).num;
+            if (nextNum == num) {
+                if (arr.indexOf(r + "#" + c) == -1) {
+                    arr.push(r + "#" + c);
+                }
+                this.scanAround(r, c + 1, r, c, num, arr, scanArr);
+                isClear = true;
+            }
+        }
+        // 四周都不通，但不是出发遍历点，并且数字相同，也加入到数组
+        if (!isClear && (lastRow != -1 && lastCol != -1)) {
+            var curNum = this.tiles[r][c].getComponent(Tile_1.default).num;
+            if (curNum == num) {
+                if (arr.indexOf(r + "#" + c) == -1) {
+                    arr.push(r + "#" + c);
+                }
+            }
+        }
+    };
+    // 主要操作逻辑
+    Game.prototype.operateLogic = function (touchRow, touchCol, curNum, isFirstCall) {
+        var _this = this;
+        var arr = new Array();
+        var addScore = 0;
+        var willclean = false; //记录是否消除
+        //加出几，加几分
+        addScore += curNum;
+        if (curNum > Tile_1.default.MAX_NUM) {
+            //最大值的特殊消除
+            willclean = true;
+            for (var r = touchRow - 1; r <= touchRow + 1; ++r) {
+                for (var c = touchCol - 1; c <= touchCol + 1; ++c) {
+                    if (!this.tiles[r] || !this.tiles[r][c])
+                        continue;
+                    addScore += Math.floor(Math.pow(2, this.tiles[r][c].getComponent(Tile_1.default).num) * (this.combo + 1) / 2);
+                    var num = this.tiles[r][c].getComponent(Tile_1.default).destoryTile();
+                    this.destoryList.push(num);
+                    this.tiles[r][c] = null;
+                }
+            }
+        }
+        else {
+            var scanArr = new Array();
+            this.scanAround(touchRow, touchCol, -1, -1, curNum, arr, scanArr);
+            if (arr.length >= this.clearNeed) {
+                //有三连，有消除
+                willclean = true;
+                for (var index in arr) {
+                    var row = arr[index].split("#")[0];
+                    var col = arr[index].split("#")[1];
+                    //加分公式，连的数字越大基数越高，2^N1，连的越多倍率越高2^N1*N2
+                    addScore += Math.floor(Math.pow(2, this.tiles[row][col].getComponent(Tile_1.default).num) * (this.combo + 1) / 2);
+                    if (row != touchRow || col != touchCol) {
+                        // 执行消除动作                    
+                        var num = this.tiles[row][col].getComponent(Tile_1.default).destoryTile();
+                        this.destoryList.push(num);
+                        this.tiles[row][col] = null;
+                    }
+                    else { //增加值
+                        //超过最大值从头开始
+                        curNum = (curNum + 1 > Tile_1.default.MAX_NUM) ? 1 : (curNum + 1);
+                        this.tiles[row][col].getComponent(Tile_1.default).setNum(curNum, false, true);
+                    }
+                }
+            }
+            else {
+                if (isFirstCall) {
+                    //消除行为已停止
+                    this.isMoving = false;
+                }
+            }
+        }
+        // 更新分数
+        this.score = parseInt(this.lbl_score_me.string) + addScore;
+        this.updateScore();
+        this.updateBgColor();
+        if (!willclean) {
+            return false;
+        }
+        //所有方块向下移动
+        this.scheduleOnce(function () {
+            _this.moveAllTileDown();
+        }, G_1.G.TIME.SECOND_SMALL_SMALL_2);
+        if (!isFirstCall) {
+            // 连击次数+1
+            this.node_combo.active = true;
+            this.updateCombo();
+            this.addEnergy();
+            this.updateEmoji();
+        }
+        // 播放音效
+        // if (this.combo < this.ac_star.length) {
+        //     cc.audioEngine.play(this.ac_star[this.combo], false, 1);
+        // } else {
+        //     cc.audioEngine.play(this.ac_star[this.ac_star.length - 1], false, 1);
+        // }
+        return true;
+    };
+    /**
+     * 能量槽增加判定
+     */
+    Game.prototype.addEnergy = function () {
+        if (this.power >= this.powermax)
+            return;
+        //满足连击条件
+        if (this.combo >= this.recoverPowerCombo) {
+            // 能量条补充一格
+            this.power++;
+            var power = cc.instantiate(this.powerPre);
+            power.width = (this.powerBarBg.width - this.line_weight * (this.node_powers.length + 1)) / this.node_powers.length;
+            power.height = this.powerBarBg.height - this.line_weight * 2;
+            this.powerBarBg.addChild(power);
+            power.setPosition(this.line_weight + (this.line_weight + power.width) * (this.power - 1) + power.width / 2, this.line_weight + power.height / 2);
+            power.color = Colors_1.default.power;
+            power.setScale(0);
+            power.runAction(cc.scaleTo(G_1.G.TIME.SECOND_SMALL, 1));
+            this.node_powers[this.power - 1] = power;
+            if (this.power > this.powerless) {
+                for (var i = 0; i < this.powerless; ++i) {
+                    this.node_powers[i].color = Colors_1.default.power;
+                }
+            }
+        }
+    };
+    /**
+     * 更新表情小动画
+     */
+    Game.prototype.updateEmoji = function () {
+        var _this = this;
+        //emoji动画
+        var idx = U_1.U.randInt(1, Object.keys(this.emojis).length);
+        if (this.emojis["cat" + idx].cache) {
+            this.node_emo.getComponent(cc.Sprite).spriteFrame = this.emojis["cat" + idx].cache;
+        }
+        else {
+            cc.loader.loadRes(this.emojis["cat" + idx].url, cc.SpriteFrame, function (err, spriteFrame) {
+                _this.node_emo.getComponent(cc.Sprite).spriteFrame = spriteFrame;
+                _this.emojis["cat" + idx].cache = spriteFrame;
+            });
+        }
+        this.node_emo.runAction(cc.sequence(cc.moveBy(G_1.G.TIME.SECOND_SMALL, cc.p(0, 20)), cc.moveBy(G_1.G.TIME.SECOND_SMALL, cc.p(0, -20)), cc.moveBy(G_1.G.TIME.SECOND_SMALL, cc.p(0, 20)), cc.moveBy(G_1.G.TIME.SECOND_SMALL, cc.p(0, -20))));
+    };
+    /**
+     * 更新进度
+     */
+    Game.prototype.updateScore = function () {
+        this.lbl_score_me.string = this.score + "";
+        this.lbl_score_me.node.runAction(cc.sequence(cc.scaleTo(G_1.G.TIME.SECOND_SMALL, 1.3, 1.3), cc.scaleTo(G_1.G.TIME.SECOND_SMALL_SMALL_3, 1, 1)));
+        this.lbl_score_me.getComponent(cc.Widget).enabled = true;
+    };
+    // 所有方块向下移动
+    Game.prototype.moveAllTileDown = function () {
+        var _this = this;
+        for (var row = 0; row < this.tiles.length; row++) {
+            for (var col = 0; col < this.tiles[row].length; col++) {
+                if (this.tiles[row][col] != null) { // 有方块
+                    for (var row1 = row; row1 > 0; row1--) {
+                        if (this.tiles[row1 - 1][col] == null) {
+                            //如果没有则向下移动
+                            this.tiles[row1 - 1][col] = this.tiles[row1][col];
+                            this.tiles[row1][col] = null;
+                            this.tiles[row1 - 1][col].getComponent(Tile_1.default).moveTo(row1 - 1, col);
+                        }
+                    }
+                }
+            }
+        }
+        // 一定延迟后生成新方块
+        this.scheduleOnce(function () {
+            _this.genTiles();
+            //一定延迟后遍历执行操作逻辑，时间间隔需大于生成间隔
+            _this.scheduleOnce(function () {
+                var isSearch = false;
+                for (var r = 0; r < _this.tiles.length; r++) {
+                    for (var c = 0; c < _this.tiles[r].length; c++) {
+                        if (!isSearch) {
+                            isSearch = _this.tiles[r][c] != null && _this.operateLogic(r, c, _this.tiles[r][c].getComponent(Tile_1.default).num, false);
+                        }
+                    }
+                }
+                if (!isSearch) {
+                    //真正所有动画和逻辑循环完
+                    _this.updateMaxNumGen();
+                    _this.updateEffect();
+                    _this.updateEncourage();
+                    _this.DATA.mecard.addPower(_this.destoryList);
+                    _this.DATA.enemycard.beated(_this.DATA.mecard.gamedata.power);
+                    _this.destoryList = [];
+                    _this.isMoving = false;
+                }
+            }, G_1.G.TIME.SECOND_SMALL_3);
+        }, G_1.G.TIME.SECOND_SMALL);
+    };
+    /**
+     * 更新连击提示
+     */
+    Game.prototype.updateCombo = function () {
+        var _this = this;
+        ++this.combo;
+        this.node_combo.getChildByName("lbl").getComponent(cc.Label).string = this.combo + " COMBO!!";
+        this.node_combo.getChildByName("lbl_shadow").getComponent(cc.Label).string = this.combo + " COMBO!!";
+        this.node_combo.runAction(cc.sequence(cc.scaleTo(0, 0.5, 0.5), cc.fadeIn(0), cc.scaleTo(G_1.G.TIME.SECOND_SMALL_2, 1, 1), cc.fadeOut(G_1.G.TIME.SECOND_SMALL_2), cc.callFunc(function () {
+            _this.node_combo.active = false;
+        })));
+        this.node_combo.runAction(cc.sequence(cc.moveBy(G_1.G.TIME.SECOND_SMALL, cc.p(0, 20)), cc.moveBy(G_1.G.TIME.SECOND_SMALL, cc.p(0, -20)), cc.moveBy(G_1.G.TIME.SECOND_SMALL, cc.p(0, 20)), cc.moveBy(G_1.G.TIME.SECOND_SMALL, cc.p(0, -20))));
+    };
+    /**
+     * 重刷可以触发的特效
+     * fixme:目前的逻辑会重复触发这里，每次下动后都会延迟重刷新
+     * 可以优化一个当前出现的最大值，避免多余的循环
+     */
+    Game.prototype.updateEffect = function () {
+        this.node_effects.removeAllChildren();
+        for (var r = 0; r < this.tiles.length; ++r) {
+            for (var c = 0; c < this.tiles[r].length; ++c) {
+                if (!this.tiles[r][c])
+                    continue;
+                var tile = this.tiles[r][c].getComponent(Tile_1.default);
+                // 最大值特效
+                // if(tile.num >= Tile.MAX_NUM){
+                //     let node_effect1:cc.Node = cc.instantiate(this.prefab_effect1)
+                //     node_effect1.x = tile.node.x
+                //     node_effect1.y = tile.node.y
+                //     node_effect1.width *= this.tileScale.w
+                //     node_effect1.height *= this.tileScale.h
+                //     this.node_effects.addChild(node_effect1)
+                //     node_effect1.getComponent(cc.Animation).play()
+                // }
+            }
+        }
+    };
+    /**
+     * 显示鼓励词
+     */
+    Game.prototype.updateEncourage = function () {
+        var _this = this;
+        if (this.combo < 1)
+            return;
+        this.node_encourage.stopAllActions();
+        this.node_encourage.active = true;
+        var coloridx = (this.combo >= Colors_1.default.combo.length - 1) ? Colors_1.default.combo.length - 1 : this.combo;
+        this.node_encourage.getChildByName("bg").color = Colors_1.default.combo[coloridx];
+        var wordidx = (this.combo >= this.encourage.length - 1) ? this.encourage.length - 1 : this.combo;
+        this.node_encourage.getChildByName("lbl").getComponent(cc.Label).string = this.encourage[wordidx];
+        this.node_encourage.getChildByName("lbl_shadow").getComponent(cc.Label).string = this.encourage[wordidx];
+        this.node_encourage.runAction(cc.sequence(cc.fadeIn(0), cc.scaleTo(0, 0.5), cc.scaleTo(G_1.G.TIME.SECOND_SMALL_2, 1, 1), cc.delayTime(G_1.G.TIME.SECOND), cc.spawn(cc.scaleTo(G_1.G.TIME.SECOND_SMALL, 0), cc.fadeOut(G_1.G.TIME.SECOND_SMALL_2)), cc.callFunc(function () {
+            _this.node_encourage.active = false;
+        })));
+    };
+    /**
+     * 背景变色
+     */
+    Game.prototype.updateBgColor = function () {
+        var coloridx = Math.floor(this.score / 5000);
+        coloridx = coloridx % Colors_1.default.bg.length;
+        this.node_bg.color = Colors_1.default.bg[coloridx];
+    };
+    /**
+     * 将某块变成想要的值
+     */
+    Game.prototype.changeTileToWant = function (row, col, val) {
+        this.tiles[row][col].getComponent(Tile_1.default).setNum(val, false, true);
+    };
+    /**
+     * 回合变换
+     */
+    Game.prototype.calcTurnOver = function () {
+    };
+    /**
+     * 显示结果
+     */
+    Game.prototype.showResult = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            var _this = this;
+            return __generator(this, function (_a) {
+                U_1.U.log("show result");
+                this.scheduleOnce(function () {
+                    _this.node_overPanel.getComponent(OverPanel_1.default).show(_this);
+                }, G_1.G.TIME.SECOND);
+                return [2 /*return*/];
+            });
+        });
+    };
+    /**
+     * 点击返回按钮
+     */
+    Game.prototype.onBackBtnClick = function () {
+    };
+    Game.prototype.onBtnShare = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                return [2 /*return*/];
+            });
+        });
+    };
+    Object.defineProperty(Game, "Instance", {
+        get: function () { return this._instance; },
+        enumerable: true,
+        configurable: true
+    });
+    Game._instance = null;
+    __decorate([
+        property(cc.Prefab)
+    ], Game.prototype, "tilePre", void 0);
+    __decorate([
+        property(cc.Node)
+    ], Game.prototype, "node_bg", void 0);
+    __decorate([
+        property(cc.Prefab)
+    ], Game.prototype, "powerPre", void 0);
+    __decorate([
+        property(cc.Node)
+    ], Game.prototype, "node_face_me", void 0);
+    __decorate([
+        property(cc.Label)
+    ], Game.prototype, "lbl_score_me", void 0);
+    __decorate([
+        property(Array)
+    ], Game.prototype, "tiles", void 0);
+    __decorate([
+        property(cc.Node)
+    ], Game.prototype, "tileBg", void 0);
+    __decorate([
+        property(cc.Node)
+    ], Game.prototype, "node_effects", void 0);
+    __decorate([
+        property(cc.Node)
+    ], Game.prototype, "powerBarBg", void 0);
+    __decorate([
+        property({ type: [cc.AudioClip] })
+    ], Game.prototype, "ac_star", void 0);
+    __decorate([
+        property(cc.Node)
+    ], Game.prototype, "node_emo", void 0);
+    __decorate([
+        property(cc.Prefab)
+    ], Game.prototype, "prefab_overpanel", void 0);
+    __decorate([
+        property(cc.Prefab)
+    ], Game.prototype, "prefab_effect1", void 0);
+    __decorate([
+        property(cc.Node)
+    ], Game.prototype, "node_encourage", void 0);
+    __decorate([
+        property(cc.Node)
+    ], Game.prototype, "node_combo", void 0);
+    __decorate([
+        property(cc.Prefab)
+    ], Game.prototype, "prefab_ranklist", void 0);
+    __decorate([
+        property(cc.Node)
+    ], Game.prototype, "node_btnshare", void 0);
+    __decorate([
+        property(cc.Prefab)
+    ], Game.prototype, "prefab_card", void 0);
+    __decorate([
+        property(cc.Node)
+    ], Game.prototype, "node_leftcard", void 0);
+    __decorate([
+        property(cc.Node)
+    ], Game.prototype, "node_rightcard", void 0);
+    Game = __decorate([
+        ccclass
+    ], Game);
+    return Game;
+}(cc.Component));
+exports.default = Game;
+
+cc._RF.pop();
+        }
+        if (CC_EDITOR) {
+            __define(__module.exports, __require, __module);
+        }
+        else {
+            cc.registerModuleFunc(__filename, function () {
+                __define(__module.exports, __require, __module);
+            });
+        }
+        })();
+        //# sourceMappingURL=Game.js.map
+        

@@ -1,0 +1,30 @@
+{
+  "cocos-analytics": {
+    "appID": "674973426",
+    "appSecret": "90d1ef1766ed49260507c95daa7cea63",
+    "channel": "魔法消除",
+    "enable": false,
+    "version": "1"
+  },
+  "collision-matrix": [
+    [
+      true
+    ]
+  ],
+  "design-resolution-height": 960,
+  "design-resolution-width": 640,
+  "excluded-modules": [],
+  "fit-height": true,
+  "fit-width": false,
+  "group-list": [
+    "default"
+  ],
+  "simulator-orientation": false,
+  "simulator-resolution": {
+    "height": 640,
+    "width": 960
+  },
+  "start-scene": "91a154db-a637-4a79-8fb7-0dbd17ed4137",
+  "use-customize-simulator": false,
+  "use-project-simulator-setting": false
+}

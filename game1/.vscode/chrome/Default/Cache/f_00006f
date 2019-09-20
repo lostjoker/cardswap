@@ -1,0 +1,654 @@
+(function() {"use strict";var __module = CC_EDITOR ? module : {exports:{}};var __filename = 'preview-scripts/assets/src/U.js';var __require = CC_EDITOR ? function (request) {return cc.require(request, require);} : function (request) {return cc.require(request, __filename);};function __define (exports, require, module) {"use strict";
+cc._RF.push(module, '4331bMn4sZKtIcpzWGrQ0+R', 'U', __filename);
+// src/U.ts
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var config_1 = require("./config");
+var G_1 = require("./G");
+var Util = /** @class */ (function () {
+    function Util() {
+        //游戏默认字体
+        this.FONTS = {
+            DEFAULT: null,
+            EFFECT: null,
+        };
+    }
+    /**
+     * 只在debug模式下输出
+     */
+    Util.prototype.log = function (log, data) {
+        if (data === void 0) { data = null; }
+        if (config_1.DEBUG) {
+            if (data != null)
+                console.log(log, data);
+            else
+                console.log(log);
+        }
+    };
+    Util.prototype.info = function (log, data) {
+        if (data === void 0) { data = null; }
+        if (config_1.DEBUG) {
+            if (data != null)
+                console.info(log, data);
+            else
+                console.info(log);
+        }
+    };
+    Util.prototype.warn = function (log, data) {
+        if (data === void 0) { data = null; }
+        if (config_1.DEBUG) {
+            if (data != null)
+                console.warn(log, data);
+            else
+                console.warn(log);
+        }
+    };
+    Util.prototype.error = function (log, data) {
+        if (data === void 0) { data = null; }
+        if (config_1.DEBUG) {
+            if (data != null)
+                console.error(log, data);
+            else
+                console.error(log);
+        }
+    };
+    Util.prototype.wait = function (ms) {
+        return new Promise(function (resolve) { return setTimeout(resolve, ms); });
+    };
+    /**
+     * 数组求和
+     * @param arr 元素为数字的数组
+     */
+    Util.prototype.sum = function (arr) {
+        var sum = 0;
+        for (var i = 0, len = arr.length; i < len; ++i) {
+            sum += arr[i];
+        }
+        return sum;
+    };
+    /**
+     * 生成一个[min, max]区间内的随机整数
+     */
+    Util.prototype.randInt = function (min, max) {
+        return Math.floor(min + Math.random() * (max - min + 1));
+    };
+    /**
+     * 生成一个[min, max]区间内的随机浮点数，并保留x位
+     */
+    Util.prototype.randNumber = function (min, max, x) {
+        return parseFloat((min + Math.random() * (max - min + 1)).toFixed(x));
+    };
+    /**
+     * 生成一个随机布尔值。
+     */
+    Util.prototype.randBool = function (rate) {
+        if (rate === void 0) { rate = 0.5; }
+        return Math.random() < rate;
+    };
+    /**
+     * Fisher–Yates shuffle费雪耶兹随机置乱算法，数组随机排序
+     * @param arr 数组
+     */
+    Util.prototype.randArray = function (arr) {
+        var _a;
+        var arr_temp = arr;
+        var i = arr_temp.length;
+        while (i) {
+            var j = Math.floor(Math.random() * i--);
+            _a = [arr_temp[i], arr_temp[j]], arr_temp[j] = _a[0], arr_temp[i] = _a[1];
+        }
+        return arr_temp;
+    };
+    Util.prototype.isNumber = function (x) {
+        return typeof x === "number";
+    };
+    Util.prototype.isString = function (x) {
+        return typeof x === "string";
+    };
+    /**
+     * 判断是否为JSON字符串
+     * @param str
+     */
+    Util.prototype.isJSONStr = function (str) {
+        try {
+            var obj = JSON.parse(str);
+            return !!(typeof obj == 'object' && obj);
+        }
+        catch (e) {
+            return false;
+        }
+    };
+    Util.prototype.ensureNumber = function (x) {
+        if (this.isNumber(x))
+            return x;
+        if (this.isString(x))
+            return parseInt(x);
+        throw new Error("type wrong!");
+    };
+    /**
+     * 二分法获取某个整数在某个范围内
+     * @param {any[]} arr 已排序整数数组
+     * @param {number} findVal 要搜索的整数
+     * @param {number} lIndex 左侧索引
+     * @param {number} rIndex 右侧索引
+     * @returns {any}
+     */
+    Util.prototype.binarySearch = function (arr, findVal, lIndex, rIndex) {
+        if (lIndex > rIndex) {
+            return lIndex <= 0 ? 0 : lIndex - 1;
+        }
+        var midIndex = Math.floor((lIndex + rIndex) / 2);
+        var midVal = Number(arr[midIndex]);
+        if (midVal > findVal) {
+            return this.binarySearch(arr, findVal, lIndex, midIndex - 1);
+        }
+        else if (midVal <= findVal) {
+            return this.binarySearch(arr, findVal, midIndex + 1, rIndex);
+        }
+        else {
+            return midIndex + 1;
+        }
+    };
+    /**
+     * 生成随机手机号，弹幕用
+     */
+    Util.prototype.randPhone = function () {
+        var barrage = "1";
+        for (var i = 0; i < 10; ++i) {
+            barrage += this.randInt(1, 9);
+        }
+        return barrage;
+    };
+    /**
+     * 场景进入过渡
+     */
+    Util.prototype.sceneIn = function (node) {
+        return __awaiter(this, void 0, void 0, function () {
+            var i;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        exports.U.mySetLocalZOrder(100, node, null, true);
+                        node.active = true;
+                        i = 0;
+                        _a.label = 1;
+                    case 1:
+                        if (!(i < node.children.length)) return [3 /*break*/, 4];
+                        if (!node.children[i].getComponent(cc.Animation))
+                            return [3 /*break*/, 3];
+                        node.children[i].getComponent(cc.Animation).play("line_down");
+                        return [4 /*yield*/, exports.U.wait(G_1.G.TIME.SECOND_SMALL_SMALL_3 * G_1.G.TIME.RATE)];
+                    case 2:
+                        _a.sent();
+                        _a.label = 3;
+                    case 3:
+                        ++i;
+                        return [3 /*break*/, 1];
+                    case 4:
+                        node.getChildByName("line_left").getComponent(cc.Animation).play("line_middle2left");
+                        node.getChildByName("line_right").getComponent(cc.Animation).play("line_middle2right");
+                        return [4 /*yield*/, exports.U.wait(G_1.G.TIME.SECOND_SMALL_2 * G_1.G.TIME.RATE)];
+                    case 5:
+                        _a.sent();
+                        node.active = false;
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
+    /**
+     * 场景退出过渡
+     */
+    Util.prototype.sceneOut = function (node, scene) {
+        if (scene === void 0) { scene = ""; }
+        return __awaiter(this, void 0, void 0, function () {
+            var i;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        if (node.active)
+                            return [2 /*return*/];
+                        exports.U.mySetLocalZOrder(100, node, null, true);
+                        node.active = true;
+                        node.getChildByName("line_left").getComponent(cc.Animation).play("line_left2middle");
+                        node.getChildByName("line_right").getComponent(cc.Animation).play("line_right2middle");
+                        return [4 /*yield*/, exports.U.wait(G_1.G.TIME.SECOND_SMALL_SMALL_2 * G_1.G.TIME.RATE)
+                            //字幕的出现
+                        ];
+                    case 1:
+                        _a.sent();
+                        i = 0;
+                        _a.label = 2;
+                    case 2:
+                        if (!(i < node.children.length)) return [3 /*break*/, 5];
+                        if (node.children[i].name.indexOf("word_") == -1)
+                            return [3 /*break*/, 4];
+                        node.children[i].active = true;
+                        return [4 /*yield*/, exports.U.wait(G_1.G.TIME.SECOND_SMALL_SMALL_2 * G_1.G.TIME.RATE)];
+                    case 3:
+                        _a.sent();
+                        _a.label = 4;
+                    case 4:
+                        ++i;
+                        return [3 /*break*/, 2];
+                    case 5: return [4 /*yield*/, exports.U.wait(G_1.G.TIME.SECOND_SMALL_3 * G_1.G.TIME.RATE)];
+                    case 6:
+                        _a.sent();
+                        if (scene)
+                            cc.director.loadScene(scene);
+                        else {
+                            this.log("SCENE不存在：" + scene);
+                        }
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
+    /**
+     * 场景退出过渡
+     */
+    Util.prototype.sceneOut1 = function (node, scene) {
+        if (scene === void 0) { scene = ""; }
+        if (scene) {
+            cc.director.preloadScene(scene, function (error) {
+                node.runAction(cc.sequence(cc.fadeOut(G_1.G.TIME.SECOND_SMALL_2), cc.callFunc(function () {
+                    cc.director.loadScene(scene);
+                })));
+            });
+        }
+        else {
+            node.runAction(cc.fadeOut(G_1.G.TIME.SECOND_SMALL_5));
+        }
+    };
+    /**
+     * 场景进入过渡
+     */
+    Util.prototype.sceneIn1 = function (node) {
+        node.opacity = 0;
+        //tofix:场景过渡的时候数据正好加载过来，刷新掉了场景可能会导致节点被覆盖？
+        node.runAction(cc.sequence(cc.fadeIn(G_1.G.TIME.SECOND_SMALL_2), cc.callFunc(function () {
+            node.opacity = 255;
+        })));
+    };
+    /**
+     * 运行封装动作
+     * @param node 节点
+     * @param action 动作
+     */
+    Util.prototype.runPromisifyAction = function (node, action) {
+        return new Promise(function (resolve) {
+            node.runAction(cc.sequence(action, cc.callFunc(function () {
+                resolve();
+            })));
+        });
+    };
+    /**
+     * 通用设置颜色
+     * @param node
+     * @param color
+     */
+    Util.prototype.setColor = function (node, color) {
+        if (!node) {
+            return;
+        }
+        node.color = cc.color(color.getR(), color.getG(), color.getB());
+        node.opacity = color.getA();
+    };
+    /**
+     * 循环设置标题背景
+     */
+    Util.prototype.setBgTop = function (node, color) {
+        if (color === void 0) { color = null; }
+        if (color) {
+            exports.U.setColor(node.getChildByName("bgtop"), color);
+        }
+        else {
+            // U.setColor(node.getChildByName("bgtop"), Colors.THEME_CURRENT.TOP_BOTTOM);
+        }
+        for (var i = 0; i < node.children.length; ++i) {
+            // if (node.children[i].getChildByName("bgtop")) {
+            this.setBgTop(node.children[i], color);
+            // }
+        }
+    };
+    /**
+     * 设置按钮可交互状态
+     * @param node 按钮节点
+     * @param interactable 交互状态
+     * @param color 按钮颜色
+     */
+    Util.prototype.setBtnInteractable = function (node, interactable, color) {
+        node.getComponent(cc.Button).interactable = interactable;
+        if (color)
+            this.setColor(node, color);
+    };
+    /**
+     * 切换货币的公链标志
+     * 薅奖期间暂用该方式临时修改客户端部分图片展示
+     */
+    Util.prototype.CoinChainSign = function (img) {
+        // if (img == "coin1") {
+        //     if (G.NEO_MODE) {
+        //         return "neo" + img
+        //     }
+        // }
+        return img;
+    };
+    /**
+     * 文本缩略显示
+     * @param txt 文本
+     * @param len 期望显示的长度
+     * @param pointpp 是否显示缩略号，默认显示
+     */
+    Util.prototype.TextThumb = function (txt, len, pointpp) {
+        if (pointpp === void 0) { pointpp = true; }
+        var newtxt = txt.substr(0, len);
+        if (txt != newtxt && pointpp) {
+            newtxt += "...";
+        }
+        return newtxt;
+    };
+    /**
+     * 字符长度不足的数字前自动补零
+     * @param num 传入的数字
+     * @param length 所需字符长度
+     */
+    Util.prototype.prefixInteger = function (num, length) {
+        return (Array(length).join('0') + num).slice(-length);
+    };
+    /**
+     * 根据节点名，按顺序查找节点以下子节点
+     */
+    Util.prototype.findChild = function (node, name, idx) {
+        if (idx === void 0) { idx = 0; }
+        if (!node)
+            return null;
+        if (idx < name.length - 1)
+            return this.findChild(node.getChildByName(name[idx]), name, idx + 1);
+        else
+            return node.getChildByName(name[idx]);
+    };
+    /**
+     * 增减当前节点Z轴层级。
+     * 有参照节点时，在参照节点的层级基础上进行增减层级。
+     * 没有参照节点时，direct为true，直接给当前节点赋个层级；为false，在本节点已有层级上加减层级。
+     * @param num 增减层级数
+     * @param node 本节点
+     * @param referenceNode 参照节点
+     * @param direct 标记是否直接给节点赋个层级
+     */
+    Util.prototype.mySetLocalZOrder = function (num, node, referenceNode, direct) {
+        if (referenceNode === void 0) { referenceNode = null; }
+        if (direct === void 0) { direct = false; }
+        if (referenceNode)
+            node.setLocalZOrder(referenceNode.getLocalZOrder() + num);
+        else if (direct)
+            node.setLocalZOrder(num);
+        else
+            node.setLocalZOrder(node.getLocalZOrder() + num);
+    };
+    /**
+     * 设置游戏默认字体
+     * @param font
+     */
+    Util.prototype.SetDefaultFont = function (obj) {
+        for (var k in this.FONTS) {
+            if (obj[k])
+                this.FONTS[k] = obj[k];
+        }
+    };
+    /**
+     * 递归，将子节点全都设置默认字体
+     */
+    Util.prototype.SetChildrenDefaultFont = function (node) {
+        if (node.getComponent(cc.Label)) { //存在lbl子控件
+            exports.U.setText(node);
+        }
+        if (node.childrenCount) {
+            for (var i = 0; i < node.children.length; ++i) {
+                this.SetChildrenDefaultFont(node.children[i]);
+            }
+        }
+    };
+    /**
+     * 设置可自定义字体的文本
+     * 也便于语言包统一
+     * @param node
+     * @param str
+     * @param font
+     */
+    Util.prototype.setText = function (node, str, font) {
+        if (str === void 0) { str = null; }
+        if (font === void 0) { font = null; }
+        if (!node) {
+            exports.U.log("DynamicSprite adapt err:" + node);
+        }
+        var comp = node.getComponent(cc.Label);
+        if (!comp) {
+            comp = node.addComponent(cc.Label);
+        }
+        comp.enabled = true;
+        if (font) {
+            comp.font = font;
+        }
+        else {
+            comp.font = this.FONTS.DEFAULT;
+        }
+        if (str != null)
+            comp.string = str + "";
+        else
+            comp.string = "";
+    };
+    /**
+     * 设置可自定义字体的富文本
+     * 也便于语言包统一
+     * @param node
+     * @param str
+     * @param font
+     */
+    Util.prototype.setRichText = function (node, str, font) {
+        if (str === void 0) { str = null; }
+        if (font === void 0) { font = null; }
+        if (!node) {
+            exports.U.log("DynamicSprite adapt err:" + node);
+        }
+        var comp = node.getComponent(cc.RichText);
+        if (!comp) {
+            comp = node.addComponent(cc.RichText);
+        }
+        comp.enabled = true;
+        if (font) {
+            comp.font = font;
+        }
+        else {
+            comp.font = this.FONTS.DEFAULT;
+        }
+        if (str != null)
+            comp.string = str + "";
+    };
+    //复制文本到剪切板,仅限web平台
+    Util.prototype.copyText = function (text) {
+        var el = document.createElement('textarea');
+        el.value = text;
+        // Prevent keyboard from showing on mobile
+        el.setAttribute('readonly', '');
+        el.style['contain'] = 'strict';
+        el.style.position = 'absolute';
+        el.style.left = '-9999px';
+        el.style.fontSize = '12pt'; // Prevent zooming on iOS
+        var selection = getSelection();
+        var originalRange = false;
+        if (selection.rangeCount > 0) {
+            originalRange = selection.getRangeAt(0);
+        }
+        document.body.appendChild(el);
+        el.select();
+        // Explicit selection workaround for iOS
+        el.selectionStart = 0;
+        el.selectionEnd = text.length;
+        var success = false;
+        try {
+            success = document.execCommand('copy');
+        }
+        catch (err) {
+            exports.U.log(err);
+        }
+        document.body.removeChild(el);
+        if (originalRange) {
+            selection.removeAllRanges();
+            selection.addRange(originalRange);
+        }
+        return success;
+    };
+    /**
+     * 执行弹进动画
+     * @param node 执行动作的节点
+     * @param time 节点运动时间
+     */
+    Util.prototype.startFadeIn = function (node, time) {
+        if (time === void 0) { time = G_1.G.TIME.SECOND_SMALL; }
+        node.active = true;
+        node.runAction(cc.spawn(cc.fadeTo(time, 255), cc.scaleTo(time, 1.0)));
+    };
+    /**
+     * 执行弹出动画
+     * @param node 执行动作的节点
+     * @param time 节点运动时间
+     */
+    Util.prototype.startFadeOut = function (node, time) {
+        if (time === void 0) { time = G_1.G.TIME.SECOND_SMALL; }
+        node.runAction(cc.sequence(cc.spawn(cc.fadeTo(time, 0), cc.scaleTo(time, 0)), cc.callFunc(function () {
+            node.active = false;
+        })));
+    };
+    /**
+     * excel导出的字符串是否为"0"或"1"
+     * 因为目前excel内的大部分0和1都以字符串导出
+     */
+    Util.prototype.excelTorF = function (v) {
+        if (v && v != "0")
+            return true;
+        else
+            return false;
+    };
+    /**
+     * 格式化日期，例："yyyy-MM-dd hh:mm:ss"
+     * @param fmt 格式化格式
+     * @param date 指定日期
+     */
+    Util.prototype.formatDate = function (fmt, date) {
+        var o = {
+            "M+": date.getMonth() + 1,
+            "d+": date.getDate(),
+            "h+": date.getHours(),
+            "m+": date.getMinutes(),
+            "s+": date.getSeconds(),
+            "q+": Math.floor((date.getMonth() + 3) / 3),
+            "S": date.getMilliseconds() // 毫秒
+        };
+        if (/(y+)/.test(fmt)) {
+            fmt = fmt.replace(RegExp.$1, (date.getFullYear() + "").substr(4 - RegExp.$1.length));
+        }
+        for (var k in o) {
+            if (new RegExp("(" + k + ")").test(fmt)) {
+                fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+            }
+        }
+        return fmt;
+    };
+    /**
+     * 把科学计数法转化为普通字符串2e-7=>0.0000002
+     * @param num
+     */
+    Util.prototype.toNonExponential = function (num) {
+        var m = num.toExponential().match(/\d(?:\.(\d*))?e([+-]\d+)/);
+        return num.toFixed(Math.max(0, (m[1] || '').length - m[2]));
+    };
+    /**截取小数后n位 不四舍五入 toFixed(100.12345,4) = 100.1234
+     * @param num 要截取的数字
+     * @param target 要保留的位数
+      */
+    Util.prototype.toFixed = function (num, target) {
+        var a = num + '';
+        if (a.lastIndexOf(".") < 0) {
+            return num;
+        }
+        return Number(a.substring(0, a.lastIndexOf(".") + target + 1));
+    };
+    /**
+     * 返回一个对象的大小，默认字节 B
+     * @param object
+     * @param unit 是否显示单位
+     */
+    Util.prototype.sizeOf = function (object, unit) {
+        var objectList = [];
+        var stack = [object];
+        var bytes = 0;
+        while (stack.length) {
+            var value = stack.pop();
+            if (typeof value === 'boolean') {
+                bytes += 4;
+            }
+            else if (typeof value === 'string') {
+                bytes += value.length * 2;
+            }
+            else if (typeof value === 'number') {
+                bytes += 8;
+            }
+            else if (typeof value === 'object' && objectList.indexOf(value) === -1) {
+                objectList.push(value);
+                // if the object is not an array, add the sizes of the keys
+                if (Object.prototype.toString.call(value) != '[object Array]') {
+                    for (var key in value)
+                        bytes += 2 * key.length;
+                }
+                for (var key in value)
+                    stack.push(value[key]);
+            }
+        }
+        if (unit) {
+            if (bytes < 1024)
+                return bytes + "B";
+            else if (bytes < 1048576)
+                return (bytes / 1024).toFixed(3) + "K";
+            else if (bytes < 1073741824)
+                return (bytes / 1048576).toFixed(3) + "M";
+            else
+                return (bytes / 1073741824).toFixed(3) + "G";
+        }
+        else {
+            return bytes;
+        }
+    };
+    Util.prototype.listenError = function () {
+        window.onerror = function (msg, url, line, col, error) {
+            //没有URL不上报！上报也不知道错误
+            if (msg != "Script error." && !url) {
+                return true;
+            }
+            exports.U.log("message：", msg);
+            exports.U.log("url：", url);
+            exports.U.log("line：", line);
+            exports.U.log("col：", col);
+            exports.U.log("error：", error);
+            return true;
+        };
+    };
+    Util.Instance = new Util();
+    return Util;
+}());
+exports.U = Util.Instance;
+
+cc._RF.pop();
+        }
+        if (CC_EDITOR) {
+            __define(__module.exports, __require, __module);
+        }
+        else {
+            cc.registerModuleFunc(__filename, function () {
+                __define(__module.exports, __require, __module);
+            });
+        }
+        })();
+        //# sourceMappingURL=U.js.map
+        
